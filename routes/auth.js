@@ -2,16 +2,13 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const messagebird = require('messagebird')('PZAOeqb1BaRTgscrNAoXTdFcA');
+// const messagebird = require('messagebird')('PZAOeqb1BaRTgscrNAoXTdFcA');
 
 require('../db/conn');
 const User = require('../model/userscema');
 const requireToken = require('../middleware/requiretoken');
 
-const client = require('twilio')(
-  'ACa27adbce36a549f95fe63c64a636f42c',
-  '84278d4e11967fe7a67330d69e6c9a37'
-);
+const client = require('twilio')('ACCOUNT_SID', 'AUTH_TOKEN');
 
 router.get('/', (req, res) => {
   res.send('welcome to money app API');
@@ -22,7 +19,7 @@ router.get('/sendotp', async (req, res) => {
     const userExists = await User.findOne({ phone: req.query.phonenumber });
     if (userExists) {
       client.verify
-        .services('VAeeae7ea43e866903bda198c9a148edde')
+        .services('SERVICE_ID')
         .verifications.create({
           to: `+${req.query.phonenumber}`,
           channel: req.query.channel,
@@ -44,7 +41,7 @@ router.get('/verify', async (req, res) => {
     const userExists = await User.findOne({ phone: req.query.phonenumber });
     if (userExists) {
       client.verify
-        .services('VAeeae7ea43e866903bda198c9a148edde')
+        .services('SERVICE_ID')
         .verificationChecks.create({
           to: `+${req.query.phonenumber}`,
           code: req.query.code,

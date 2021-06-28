@@ -13,8 +13,6 @@ const User = require('./model/userscema');
 
 const PORT = process.env.PORT;
 
-const config = require('./Config');
-
 // middleware
 const middleware = (req, res, next) => {
   console.log('hello this is middleware');
