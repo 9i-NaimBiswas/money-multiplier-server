@@ -7,6 +7,7 @@ const bodyParser = require("body-parser")
 
 
 require('dotenv').config()
+const refFriendsRouter = require('./routes/refAfriends')
 const bankRouter = require("./routes/bankRouter")
 const auth = require("./routes/auth")
 
@@ -19,6 +20,11 @@ app.use(cors())
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+
+
+
+// refer a friends 
+app.use('/api', refFriendsRouter)
 
 // bank details api 
 app.use('/api', bankRouter)

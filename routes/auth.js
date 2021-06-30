@@ -181,6 +181,24 @@ router.post('/login', async (req, res, next) => {
    }
 });
 
+// delete a user 
+router.delete("/delete-user", (req, res) => {
+   const userId = req.headers['userid'];
+   if (userId) {
+      User.findOneAndDelete({ _id: userId }, function (err, result) {
+         if (err) {
+            res.status(400).json({ message: "Something went wrong", success: false, error: err });
+         } else {
+            res.status(200).json({ message: "User Deleted success", success: true, });
+         }
+      });
+   } else {
+      res.status(400).json({
+         message: "Send userid by headers",
+         success: false,
+      })
+   }
 
+})
 
 module.exports = router;
