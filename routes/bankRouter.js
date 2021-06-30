@@ -7,7 +7,7 @@ const bankModel = require("../model/bankModel")
 Router.post('/bank-details', (req, res) => {
    const userId = req.headers['userid']
    const { name, email, mobile, bankAccount, bankName, ifseCode, upiCode } = req.body
-   if (!name || !email || !mobile || !bankAccount || !bankName || !ifseCode || !upiCode) {
+   if (name || email || mobile || bankAccount || bankName || ifseCode || upiCode) {
       if (!userId) {
          res.status(400).json({
             message: "Send userid by headers",
