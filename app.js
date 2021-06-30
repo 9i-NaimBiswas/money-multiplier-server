@@ -25,7 +25,9 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 
-
+app.get('/', (req, res) => {
+   res.send("Welcome to Money multiplier world")
+})
 
 app.use('/api', auth);
 const User = require('./model/userscema');
