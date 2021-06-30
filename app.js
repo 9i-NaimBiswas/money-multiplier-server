@@ -1,17 +1,14 @@
 const express = require('express');
-const mongoose = require('mongoose');
-const db = require("./db/conn")
-const dotenv = require('dotenv');
-require('dotenv').config()
 const app = express();
+const db = require("./db/conn")
+
+const dotenv = require('dotenv');
 const bodyParser = require("body-parser")
 const cors = require('cors')
 
+
+require('dotenv').config()
 const auth = require("./routes/auth")
-
-
-
-
 
 
 
@@ -24,27 +21,12 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 
-app.get('/', (req, res) => {
-   res.send("Welcome to Money multiplier world")
-})
-
 app.use('/api', auth);
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+app.get('/', (req, res) => {
+   res.send("Welcome to Money multiplier world")
+})
 
 
 
