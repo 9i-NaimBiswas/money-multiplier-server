@@ -32,10 +32,15 @@ app.get('/', (req, res) => {
 
 
 
-const PORT = 3001 || process.env.PORT;
 
 
-app.listen(PORT, () => {
-   console.log(`server running at port no. ${PORT}`);
-   db
+
+var Port = process.env.PORT || 3001;
+app.listen(Port, (err) => {
+   if (err) {
+      console.log(err)
+   } else {
+      console.log('Server is listening' + ' ' + Port);
+      db
+   }
 });
