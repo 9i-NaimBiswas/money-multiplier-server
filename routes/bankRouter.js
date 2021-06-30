@@ -7,35 +7,33 @@ const bankModel = require("../model/bankModel")
 Router.post('/bank-details', (req, res) => {
    const userId = req.headers['userid']
    const { name, email, mobile, bankAccount, bankName, ifseCode, upiCode } = req.body
-   if (name || email || mobile || bankAccount || bankName || ifseCode || upiCode) {
-      if (!userId) {
-         res.status(400).json({
-            message: "Send userid by headers",
-            success: false,
-         })
-      } else {
-         const newBank = new bankModel({
-            userId: userId,
-            name: name,
-            email: email,
-            mobile: mobile,
-            bankAccount: bankAccount,
-            bankName: bankName,
-            ifseCode: ifseCode,
-            upiCode: upiCode
-         })
-         newBank.save().then(data => {
-            res.status(201).json({
-               message: "Bank Details added",
-               success: true,
-               data: data
-            })
-         })
-      }
-   } else {
+   if (!name || !email || !mobile || !bankAccount || !bankName || !ifseCode || !upiCode) {
       res.status(400).json({
          message: "Fill all the fileds and try again",
          success: false,
+      })
+   } else if (!userId) {
+      res.status(400).json({
+         message: "Send userid by headers",
+         success: false,
+      })
+   } else {
+      const newBank = new bankModel({
+         userId: userId,
+         name: name,
+         email: email,
+         mobile: mobile,
+         bankAccount: bankAccount,
+         bankName: bankName,
+         ifseCode: ifseCode,
+         upiCode: upiCode
+      })
+      newBank.save().then(data => {
+         res.status(201).json({
+            message: "Bank Details added",
+            success: true,
+            data: data
+         })
       })
    }
 
