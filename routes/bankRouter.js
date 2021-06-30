@@ -42,5 +42,23 @@ Router.post('/bank-details', (req, res) => {
 })
 
 
-Router.get("")
+Router.get("/get-bank-details", (req, res) => {
+   const userId = req.headers['userid']
+
+   bankModel.findOne({ userId: userId }, (err, data) => {
+      if (err) {
+         res.status(400).json({
+            message: "Something happend wrong",
+            success: false,
+            error: err,
+         })
+      } else {
+         res.status(200).json({
+            message: "Bank details",
+            success: true,
+            data: data,
+         })
+      }
+   })
+})
 module.exports = Router
