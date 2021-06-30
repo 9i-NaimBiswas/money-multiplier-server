@@ -22,7 +22,7 @@ router.get('/sendotp', async (req, res) => {
             client.verify
                .services(SERVICE_ID)
                .verifications.create({
-                  to: `+${req.headers['phonenumber']}`,
+                  to: `${req.headers['phonenumber']}`,
                   channel: 'sms',
                })
                .then((data) => {
@@ -63,7 +63,7 @@ router.get('/verify', (req, res) => {
          client.verify
             .services(SERVICE_ID)
             .verificationChecks.create({
-               to: `+${req.headers['phonenumber']}`,
+               to: `${req.headers['phonenumber']}`,
                code: req.body.code,
             }).then(userExits => {
                res.status(200).json({
