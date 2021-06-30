@@ -2,204 +2,178 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-// const messagebird = require('messagebird')('PZAOeqb1BaRTgscrNAoXTdFcA');
 
+const SERVICE_ID = "VA32e5cdce26645082c8d087d3e7995c1e"
 require('../db/conn');
 const User = require('../model/userscema');
 const requireToken = require('../middleware/requiretoken');
 
-const client = require('twilio')('ACCOUNT_SID', 'AUTH_TOKEN');
+const client = require('twilio')('ACccc5f8b781334036e46ae03d777875ff', 'ccf28980f8f98ad9e69851766c733b98');
 
 router.get('/', (req, res) => {
-  res.send('welcome to money app API');
+   res.send('welcome to money app API');
 });
 
 router.get('/sendotp', async (req, res) => {
-  try {
-    const userExists = await User.findOne({ phone: req.query.phonenumber });
-    if (userExists) {
-      client.verify
-        .services('SERVICE_ID')
-        .verifications.create({
-          to: `+${req.query.phonenumber}`,
-          channel: req.query.channel,
-        })
-        .then((data) => {
-          res.status(200).send(data);
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
-    }
-  } catch (error) {
-    res.send(error);
-  }
+   try {
+      const userExists = User.findOne({ phone: req.headers['phonenumber'] });
+      userExists.then(results => {
+
+         if (!results) {
+            client.verify
+               .services(SERVICE_ID)
+               .verifications.create({
+                  to: `+${req.headers['phonenumber']}`,
+                  channel: 'sms',
+               })
+               .then((data) => {
+                  res.status(200).json({
+                     message: "Otp has been sended to user phone number",
+                     success: true,
+                     phoneNumber: req.headers['phonenumber']
+                  });
+               })
+
+         } else {
+            res.status(400).json({
+               message: "This phone number already registared",
+               success: false,
+               userExists: true,
+            })
+         }
+      })
+
+   } catch (error) {
+      res.send(error);
+   }
 });
 
-router.get('/verify', async (req, res) => {
-  try {
-    const userExists = await User.findOne({ phone: req.query.phonenumber });
-    if (userExists) {
-      client.verify
-        .services('SERVICE_ID')
-        .verificationChecks.create({
-          to: `+${req.query.phonenumber}`,
-          code: req.query.code,
-        })
-        .then(res.status(200).send(userExists._id));
-      // .then(res.send(userExists._id));
-    } else {
-      res.status(400).send('nummber not found');
-    }
-  } catch (error) {
-    res.send(error);
-  }
+router.get('/verify', (req, res) => {
+
+   const userExists = User.findOne({ phone: req.headers["phonenumber"] });
+
+   userExists.then(data => {
+
+      if (!data) {
+         client.verify
+            .services(SERVICE_ID)
+            .verificationChecks.create({
+               to: `+${req.headers['phonenumber']}`,
+               code: req.body.code,
+            })
+            .then(userExits => {
+               res.status(200).json({
+                  message: "Verification done",
+                  success: true,
+               })
+            }).catch(err => {
+               res.status(400).json({
+                  message: "Verification failed",
+                  success: false,
+                  phoneNumber: req.headers['phonenumber'],
+               })
+            })
+
+      } else {
+         res.status(400).json({
+            message: "This phone number already registared",
+            success: false,
+            userExists: true,
+         })
+      }
+
+   })
+
+
 });
 
-router.get('/test', async (req, res) => {
-  const userid = req.headers['user'];
-  User.findOne({ _id: userid }, function (err, result) {
-    if (err) {
-      res.send(err);
-    } else {
-      res.json({ data: result });
-    }
-  });
+
+router.get('/user-data', async (req, res) => {
+   const userId = req.headers['userid'];
+   if (userId) {
+      User.findOne({ _id: userId }, function (err, result) {
+         if (err) {
+            res.status(400).json({ message: "Something went wrong", success: false, error: err });
+         } else {
+            res.status(200).json({ data: result });
+         }
+      });
+   } else {
+      res.status(400).json({
+         message: "Send userid by headers",
+         success: false,
+      })
+   }
+
 });
-// // send otp
-// router.post('/otp', (req, res) => {
-//   const { phoneNumber } = req.body;
-//   if (!phoneNumber) {
-//     res.status(422).json({
-//       message: 'Validation Error, ',
-//       error: 'Phone Number is required',
-//       success: false,
-//     });
-//   } else {
-//     const newPhoneNumber = '+88' + phoneNumber;
 
-//     messagebird.verify.create(
-//       newPhoneNumber,
-//       {
-//         emplate: 'Your Verify Code is %token',
-//         timeout: 120,
-//       },
-//       function (err, response) {
-//         if (err) {
-//           res.status(400).json({
-//             message: 'Something went wrong',
-//             error: err,
-//             success: false,
-//           });
-//         } else {
-//           res.status(200).json({
-//             message: 'Otp Sended',
-//             response: response,
-//             success: true,
-//           });
-//         }
-//       }
-//     );
-//   }
-// });
 
-// /////send otp using Twillio//////
 
-// router.route('/').get(function (req, res) {
-//   const { user } = req.body;
-//  );
-// });
-
-// using promises
-
-// router.post('/register', (req, res) => {
-//   const { name, phone, email, work, password, cpassword } = req.body;
-
-//   if (!name || !phone || !email || !work || !password || !cpassword) {
-//     return res.status(422).json({ error: 'plz fill the field' });
-//   }
-//   User.findOne({ email: email })
-//     .then((userExists) => {
-//       if (userExists) {
-//         return res.status(422).json({ error: 'email already taken' });
-//       }
-//       const user = new User({ name, phone, email, work, password, cpassword });
-
-//       user
-//         .save()
-//         .then(() => {
-//           res.status(201).json({ message: 'User created' });
-//         })
-//         .catch((err) => {
-//           res.status(500).json({ error: err });
-//         });
-//     })
-//     .catch((err) => console.log(err));
-// });
-
+// registration router s
 router.post('/register', async (req, res) => {
-  const { phone, email, password, cpassword, reedemCode } = req.body;
+   const { phone, email, password, cpassword, reedemCode } = req.body;
 
-  if (!phone || !email || !password || !cpassword) {
-    return res.status(422).json({ error: 'plz fill the field' });
-  }
+   if (!phone || !email || !password || !cpassword) {
+      return res.status(422).json({ error: 'Please fill all fields' });
+   }
 
-  try {
-    const userExists = await User.findOne({ email: email });
-    if (userExists) {
-      return res.status(422).json({ error: 'email already taken' });
-    } else if (password != cpassword) {
-      return res.status(422).json({ error: 'password not matched' });
-    } else {
-      const user = new User({ phone, email, password, cpassword, reedemCode });
+   try {
+      const userExists = await User.findOne({ email: email });
+      if (userExists) {
+         return res.status(422).json({ error: 'Email a user exits with this email, try again with another mail', userId: userExists._id, email: userExists.email, phoneNumber: userExists.phone });
+      } else if (password != cpassword) {
+         return res.status(422).json({ error: 'Password and confirm password must be same' });
+      } else {
+         const user = new User({ phone, email, password, cpassword, reedemCode });
 
-      await user.save();
-      const token = jwt.sign({ userId: user._id }, process.env.SECRET_KEY);
-      res.status(201).json({ token });
-    }
-  } catch (error) {
-    console.log(error);
-  }
+         await user.save().then(data => {
+            res.status(201).json({ messag: "Registration success", success: true, newUser: true, userId: data._id });
+
+         })
+
+      }
+   } catch (error) {
+      res.status(400).json({
+         error: "Something went wrong",
+         success: false,
+         errMessage: error
+      })
+   }
 });
+
 
 // login route
-
 router.post('/login', async (req, res, next) => {
-  try {
-    const { email, password } = req.body;
-    if (!email || !password) {
-      res.json({ error: 'plz fill credentials' });
-    }
-    const userLogin = await User.findOne({ email: email });
-    if (userLogin) {
-      const ismatched = await bcrypt.compare(password, userLogin.password);
-      const token = await userLogin.generateAuthToken();
-
-      res.cookie('jwtoken', token, {
-        expires: new Date(Date.now() + 25892000000),
-        httpOnly: true,
-      });
-
-      if (!ismatched) {
-        res.status(400).json({ error: 'invalid credentials' });
+   try {
+      const { email, password } = req.body;
+      if (!email || !password) {
+         res.status(400).json({ error: 'Please fill credentials' });
       } else {
-        const token = jwt.sign(
-          { userId: userLogin._id },
-          process.env.SECRET_KEY
-        );
-        res.json({ message: { userId: userLogin._id, token: token } });
+         const userLogin = await User.findOne({ email: email });
+         if (userLogin) {
+            const ismatched = await bcrypt.compare(password, userLogin.password);
+
+            if (!ismatched) {
+               res.status(400).json({ error: 'Invalid credentials', success: false, });
+            } else {
+               res.status(200).json({
+                  message: "Login success",
+                  success: true,
+                  userId: userLogin._id,
+                  email: userLogin.email,
+                  phoneNumber: userLogin.phone,
+               });
+            }
+         } else {
+            res.status(400).json({ error: 'Invalid credentials' });
+         }
       }
-    } else {
-      res.status(400).json({ error: 'invalid credentials' });
-    }
-  } catch (error) {
-    return res.status(422).send(error.message);
-  }
+
+   } catch (error) {
+      return res.status(422).send(error.message);
+   }
 });
 
-router.get('/balance', (req, res, next) => {
-  let user = req.user;
-  return res.send(user);
-});
+
 
 module.exports = router;
