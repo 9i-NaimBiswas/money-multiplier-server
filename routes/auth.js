@@ -1,18 +1,17 @@
 const express = require('express');
 const router = express.Router();
+
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+
+const User = require('../model/userscema');
 
 const SERVICE_ID = "VA32e5cdce26645082c8d087d3e7995c1e"
 require('../db/conn');
-const User = require('../model/userscema');
-const requireToken = require('../middleware/requiretoken');
+
 
 const client = require('twilio')('ACccc5f8b781334036e46ae03d777875ff', 'ccf28980f8f98ad9e69851766c733b98');
 
-router.get('/', (req, res) => {
-   res.send('welcome to money app API');
-});
+
 
 router.get('/sendotp', async (req, res) => {
    try {
