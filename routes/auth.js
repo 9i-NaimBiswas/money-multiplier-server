@@ -35,6 +35,7 @@ router.get('/sendotp', async (req, res) => {
                   res.status(400).json({
                      message: "Something  went wrong",
                      success: false,
+                     error: err,
                   })
                })
 
