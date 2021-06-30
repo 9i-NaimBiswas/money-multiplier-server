@@ -1,7 +1,8 @@
+const express = require('express');
 const mongoose = require('mongoose');
+const db = require("./db/conn")
 const dotenv = require('dotenv');
 require('dotenv').config()
-const express = require('express');
 const app = express();
 const bodyParser = require("body-parser")
 const cors = require('cors')
@@ -14,9 +15,7 @@ const auth = require("./routes/auth")
 
 
 
-// database connection
-dotenv.config({ path: './config.env' });
-require('./db/conn');
+
 
 
 app.use(cors())
@@ -30,7 +29,7 @@ app.get('/', (req, res) => {
 })
 
 app.use('/api', auth);
-const User = require('./model/userscema');
+
 
 
 
@@ -54,18 +53,8 @@ const User = require('./model/userscema');
 
 const PORT = 3001 || process.env.PORT;
 
-// middleware
-const middleware = (req, res, next) => {
-   console.log('hello this is middleware');
-   next();
-};
-
-app.post('/home', middleware, (req, res) => {
-   console.log(req.body);
-   res.send('this is home');
-});
 
 app.listen(PORT, () => {
    console.log(`server running at port no. ${PORT}`);
-   // console.log(process.env.ACCOUNT_SID);
+   db
 });
