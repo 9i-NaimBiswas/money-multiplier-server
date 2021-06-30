@@ -4,7 +4,7 @@ const referralCodeGenerator = require('referral-code-generator')
 
 const refFriendModel = require("../model/referModel")
 
-Router.get('/refer-a-frields', (req, res) => {
+Router.get('/refer-a-friends', (req, res) => {
    const refCodeFirst = referralCodeGenerator.alphaNumeric('lowercase', 1, 2)
    const refCodeSecond = referralCodeGenerator.alphaNumeric('lowercase', 1, 2)
    const refCode = refCodeFirst + refCodeSecond
