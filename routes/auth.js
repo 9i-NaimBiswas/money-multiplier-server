@@ -52,7 +52,7 @@ router.get('/sendotp', async (req, res) => {
    }
 });
 
-router.get('/verify', (req, res) => {
+router.post('/verify', (req, res) => {
 
    const userExists = User.findOne({ phone: req.headers["phonenumber"] });
 
