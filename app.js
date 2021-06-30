@@ -7,6 +7,7 @@ const bodyParser = require("body-parser")
 
 
 require('dotenv').config()
+const bankRouter = require("./routes/bankRouter")
 const auth = require("./routes/auth")
 
 
@@ -19,7 +20,10 @@ app.use(express.json());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
+// bank details api 
+app.use('/api', bankRouter)
 
+// auth api 
 app.use('/api', auth);
 
 

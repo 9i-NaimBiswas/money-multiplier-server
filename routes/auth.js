@@ -31,6 +31,11 @@ router.get('/sendotp', async (req, res) => {
                      success: true,
                      phoneNumber: req.headers['phonenumber']
                   });
+               }).catch(err => {
+                  res.status(400).json({
+                     message: "Something  went wrong",
+                     success: false,
+                  })
                })
 
          } else {
@@ -54,22 +59,24 @@ router.get('/verify', (req, res) => {
    userExists.then(data => {
 
       if (!data) {
+
          client.verify
             .services(SERVICE_ID)
             .verificationChecks.create({
                to: `+${req.headers['phonenumber']}`,
                code: req.body.code,
-            })
-            .then(userExits => {
+            }).then(userExits => {
                res.status(200).json({
                   message: "Verification done",
                   success: true,
+                  data: userExits
                })
             }).catch(err => {
                res.status(400).json({
                   message: "Verification failed",
                   success: false,
                   phoneNumber: req.headers['phonenumber'],
+                  error: err
                })
             })
 
