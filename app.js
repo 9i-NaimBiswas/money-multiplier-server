@@ -7,6 +7,7 @@ const bodyParser = require("body-parser")
 
 
 require('dotenv').config()
+const buyInvestmentRouter = require('./routes/buyInvestmentRouter')
 const refFriendsRouter = require('./routes/refAfriends')
 const bankRouter = require("./routes/bankRouter")
 const auth = require("./routes/auth")
@@ -21,7 +22,8 @@ app.use(express.json());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-
+// buy a invesment 
+app.use('/api', buyInvestmentRouter)
 
 // refer a friends 
 app.use('/api', refFriendsRouter)
