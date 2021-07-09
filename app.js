@@ -16,7 +16,7 @@ const auth = require("./routes/auth")
 
 
 
-
+app.use("/uploads", express.static("uploads"))
 app.use(cors())
 app.use(express.json());
 app.use(bodyParser.json());
