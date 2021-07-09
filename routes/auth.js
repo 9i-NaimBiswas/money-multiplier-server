@@ -5,6 +5,24 @@ const bcrypt = require('bcryptjs');
 
 const User = require('../model/userscema');
 
+
+
+const multer = require("multer")
+const storage = multer.diskStorage({
+   destination: function (req, file, cb) {
+      cb(null, './uploads/')
+   },
+   filename: function (req, file, cb) {
+      cb(null, Date.now() + '-' + file.originalname)
+   }
+})
+
+const upload = multer({ storage: storage })
+
+
+
+
+
 const SERVICE_ID = "VA25e2f12a0ae7b959a4fd1112e185a8af"
 require('../db/conn');
 
@@ -192,6 +210,44 @@ router.delete("/delete-user", (req, res) => {
             res.status(200).json({ message: "User Deleted success", success: true, });
          }
       });
+   } else {
+      res.status(400).json({
+         message: "Send userid by headers",
+         success: false,
+      })
+   }
+
+})
+
+
+
+
+// update profile image 
+router.put('/update-profile', upload.single("image"), (req, res) => {
+   const userId = req.headers['userid']
+   if (userId) {
+      if (req.file) {
+         User.findByIdAndUpdate(userId, { image: req.file.path }, { new: true }, (err, successData) => {
+            if (err) {
+               res.status(500).json({
+                  message: "Something went wrong",
+                  success: false,
+                  error: err
+               })
+            } else {
+               res.status(202).json({
+                  message: "Image updated success",
+                  success: true,
+                  data: successData
+               })
+            }
+         })
+      } else {
+         res.status(400).json({
+            message: "Select a image and try agian later",
+            success: false,
+         })
+      }
    } else {
       res.status(400).json({
          message: "Send userid by headers",

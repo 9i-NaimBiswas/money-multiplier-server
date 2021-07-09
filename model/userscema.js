@@ -20,7 +20,16 @@ const userScema = new mongoose.Schema({
    reedemCode: {
       type: String,
    },
-
+   image: {
+      type: String
+   },
+   balance: {
+      stype: String
+   },
+   totalIncone: {
+      type: String,
+      default: '0'
+   },
    // transactionsDone: {
    //   Balance: {
    //     type: Number,
