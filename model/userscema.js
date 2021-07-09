@@ -16,7 +16,6 @@ const userScema = new mongoose.Schema({
       type: String,
       required: true,
    },
-
    reedemCode: {
       type: String,
    },
@@ -27,28 +26,19 @@ const userScema = new mongoose.Schema({
       type: Number,
       default: '0'
    },
-   totalIncone: {
+   totalAssets: {
       type: Number,
       default: '0'
    },
-   // transactionsDone: {
-   //   Balance: {
-   //     type: Number,
-   //     required: true,
-   //   },
-   //   TotalAssets: {
-   //     type: Number,
-   //     required: true,
-   //   },
-   //   TodaysIncome: {
-   //     type: Number,
-   //     required: true,
-   //   },
-   //   Transactions: {
-   //     type: Number,
-   //     required: true,
-   //   },
-   // },
+   totalIncome: {
+      type: Number,
+      default: '0'
+   },
+   transactions: {
+      type: Number,
+      default: '0'
+   },
+
 });
 
 userScema.pre('save', async function (next) {

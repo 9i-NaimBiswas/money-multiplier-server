@@ -13,7 +13,7 @@ Router.post('/buy-investment', (req, res) => {
       const newInvest = new investModel({
          userId: userId,
          investId: investId,
-         investPrice: investPrice,
+         investPrice: parseInt(investPrice),
          profitPerHour: profitPerHour,
          durationOfInvest: durationOfInvest,
          purhaseTime: purhaseTime,
