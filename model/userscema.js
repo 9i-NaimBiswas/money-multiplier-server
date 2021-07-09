@@ -24,10 +24,11 @@ const userScema = new mongoose.Schema({
       type: String
    },
    balance: {
-      stype: String
+      type: Number,
+      default: '0'
    },
    totalIncone: {
-      type: String,
+      type: Number,
       default: '0'
    },
    // transactionsDone: {

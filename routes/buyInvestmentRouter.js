@@ -1,6 +1,7 @@
 const express = require('express')
 const Router = express.Router()
 const investModel = require('../model/investModel')
+const userModel = require('../model/userscema')
 // buy a investment 
 Router.post('/buy-investment', (req, res) => {
    const userId = req.headers['userid']
@@ -18,12 +19,44 @@ Router.post('/buy-investment', (req, res) => {
          purhaseTime: purhaseTime,
          expireTime: expireTime,
       })
-      newInvest.save().then(data => {
-         res.status(200).json({
-            message: "Thanks for buying a investment service",
-            success: true,
-            data: data
-         })
+
+      userModel.findById(userId, (err, dataBalance) => {
+         if (dataBalance) {
+            if (dataBalance.balance < investPrice) {
+               res.status(402).json({
+                  message: "Inchapition Balance, Rechange and try agian",
+                  success: false,
+                  availableBalnce: dataBalance.balance
+               })
+            } else {
+               const newBalnce = dataBalance.balance - investPrice
+               userModel.findByIdAndUpdate(userId, { balance: newBalnce }, { new: true }, (err, success) => {
+                  if (success) {
+                     newInvest.save().then(data => {
+                        res.status(200).json({
+                           message: "Thanks for buying a investment service",
+                           success: true,
+                           data: data,
+                           availableBalnce: success.balance
+                        })
+                     })
+                  } else {
+                     res.status(400).json({
+                        message: "Something wrong",
+                        success: false,
+                        error: err
+                     })
+                  }
+               })
+
+            }
+         } else {
+            res.status(400).json({
+               message: "Something wrong",
+               success: false,
+               error: err
+            })
+         }
       })
    } else {
       res.status(400).json({
