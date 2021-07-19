@@ -167,17 +167,12 @@ router.post('/register', (req, res) => {
                      referUse: true,
                   });
                   user.save().then(data => {
-                     const totalUser = parseInt(Codedata.totalPeople) + 1
-                     ReferModel.findByIdAndUpdate(Codedata._id, {
-                        totalPeople: totalUser
-                     }).then(succData => {
-                        res.status(201).json({
-                           messag: "Registration success",
-                           success: true,
-                           newUser: true,
-                           userId: data._id
-                        });
-                     })
+                     res.status(201).json({
+                        messag: "Registration success",
+                        success: true,
+                        newUser: true,
+                        userId: data._id
+                     });
                   })
                } else {
                   res.status(400).json({
