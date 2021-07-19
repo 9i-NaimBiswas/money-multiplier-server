@@ -7,7 +7,7 @@ const bodyParser = require("body-parser")
 
 
 require('dotenv').config()
-
+const totalPeopleRouter = require('./routes/TotalPeopleRouter')
 const rechargeRouter = require('./routes/rechargeRouter')
 const buyInvestmentRouter = require('./routes/buyInvestmentRouter')
 const refFriendsRouter = require('./routes/refAfriends')
@@ -24,7 +24,8 @@ app.use(express.json());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-
+// total people 
+app.use('/api', totalPeopleRouter)
 
 // recaharge api 
 app.use('/api', rechargeRouter)
