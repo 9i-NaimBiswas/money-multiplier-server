@@ -3,7 +3,7 @@ const mongoose = require('mongoose')
 const ReferModelSchema = new mongoose.Schema(
    {
       userId: {
-         type: String,
+         type: mongoose.Schema.Types.ObjectId,
       },
       refCode: {
          type: String,
@@ -11,6 +11,9 @@ const ReferModelSchema = new mongoose.Schema(
       totalPeople: {
          type: Number,
          default: 0,
+      },
+      referWith: {
+         type: mongoose.Schema.Types.ObjectId,
       }
    }
 );

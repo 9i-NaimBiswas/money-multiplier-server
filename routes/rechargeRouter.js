@@ -1,5 +1,6 @@
 const Router = require('express').Router()
 const userModel = require('../model/userscema')
+const referModel = require('../model/referModel')
 Router.post("/recharge", (req, res) => {
    const { amount } = req.body
    const userId = req.headers['userid']
@@ -14,11 +15,39 @@ Router.post("/recharge", (req, res) => {
                balance: newBalance,
                transactions: newTrans
             }, { new: true }, (err, data) => {
-               res.status(201).json({
-                  message: "Thanks for recharge",
-                  success: true,
-                  data: data
+               const referCode = data.reedemCode
+               referModel.findOne({ refCode: referCode }, (err, refData) => {
+
+
+                  if (refData) {
+                     const current = refData.totalPeople
+                     const refUserId = refData._id
+                     const SubTotal = parseInt(current) + 1
+
+
+
+                     if (refData.referWith != userId) {
+                        referModel.findByIdAndUpdate(refUserId, {
+                           totalPeople: SubTotal,
+                           referWith: userId
+                        }, { new: true }).then(RefUpdateData => {
+                           res.status(201).json({
+                              message: "Thanks for recharge",
+                              success: true,
+                              data: data,
+                              ReedemData: RefUpdateData
+                           })
+                        })
+                     } else {
+                        res.status(200).json({
+                           message: "Thanks for recharge",
+                           success: true,
+                           data: data,
+                        })
+                     }
+                  }
                })
+
             })
          }
       })
