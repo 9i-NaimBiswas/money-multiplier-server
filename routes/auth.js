@@ -4,7 +4,7 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 
 const User = require('../model/userscema');
-
+const ReferModel = require('../model/referModel');
 
 
 const multer = require("multer")
@@ -135,35 +135,66 @@ router.get('/user-data', async (req, res) => {
 
 
 // registration router s
-router.post('/register', async (req, res) => {
+router.post('/register', (req, res) => {
    const { phone, email, password, cpassword, reedemCode } = req.body;
 
    if (!phone || !email || !password || !cpassword) {
       return res.status(422).json({ error: 'Please fill all fields' });
    }
+   const userExists = User.findOne({ email: email }, (err, userExists) => {
 
-   try {
-      const userExists = await User.findOne({ email: email });
       if (userExists) {
-         return res.status(422).json({ error: 'Email a user exits with this email, try again with another mail', userId: userExists._id, email: userExists.email, phoneNumber: userExists.phone });
+         return res.status(422).json({
+            error: 'Email a user exits with this email, try again with another mail',
+            userId: userExists._id,
+            email: userExists.email,
+            phoneNumber: userExists.phone
+         });
       } else if (password != cpassword) {
-         return res.status(422).json({ error: 'Password and confirm password must be same' });
+         return res.status(422).json({
+            error: 'Password and confirm password must be same'
+         });
       } else {
-         const user = new User({ phone, email, password, cpassword, reedemCode });
-
-         await user.save().then(data => {
-            res.status(201).json({ messag: "Registration success", success: true, newUser: true, userId: data._id });
-
-         })
-
+         if (reedemCode) {
+            ReferModel.findOne({ refCode: reedemCode }, (err, Codedata) => {
+               if (Codedata) {
+                  const user = new User({
+                     phone: phone,
+                     email: email,
+                     password: password,
+                     cpassword: cpassword,
+                     reedemCode: reedemCode,
+                     referUse: true,
+                  });
+                  user.save().then(data => {
+                     const totalUser = parseInt(Codedata.totalPeople) + 1
+                     ReferModel.findByIdAndUpdate(Codedata._id, {
+                        totalPeople: totalUser
+                     }).then(succData => {
+                        res.status(201).json({
+                           messag: "Registration success",
+                           success: true,
+                           newUser: true,
+                           userId: data._id
+                        });
+                     })
+                  })
+               } else {
+                  res.status(400).json({
+                     messag: "Wrong Reedeme code, Please try agian with valid code",
+                     success: false,
+                     error: err,
+                  });
+               }
+            })
+         } else {
+            res.status(400).json({
+               messag: "Wrong Reede code, Please try agian with valid code",
+               success: false,
+            });
+         }
       }
-   } catch (error) {
-      res.status(400).json({
-         error: "Something went wrong",
-         success: false,
-         errMessage: error
-      })
-   }
+   });
 });
 
 

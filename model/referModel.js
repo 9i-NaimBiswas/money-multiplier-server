@@ -7,6 +7,10 @@ const ReferModelSchema = new mongoose.Schema(
       },
       refCode: {
          type: String,
+      },
+      totalPeople: {
+         type: Number,
+         default: 0,
       }
    }
 );

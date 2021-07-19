@@ -38,6 +38,11 @@ const userScema = new mongoose.Schema({
       type: Number,
       default: '0'
    },
+   referUse: {
+      type: Boolean,
+      default: false,
+   },
+
 
 });
 
