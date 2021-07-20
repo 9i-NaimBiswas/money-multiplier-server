@@ -18,13 +18,10 @@ Router.post("/recharge", (req, res) => {
                const referCode = data.reedemCode
                referModel.findOne({ refCode: referCode }, (err, refData) => {
 
-
                   if (refData) {
                      const current = refData.totalPeople
                      const refUserId = refData._id
                      const SubTotal = parseInt(current) + 1
-
-
 
                      if (refData.referWith != userId) {
                         referModel.findByIdAndUpdate(refUserId, {
